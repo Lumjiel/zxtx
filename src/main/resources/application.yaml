@@ -2,7 +2,7 @@ server:
   port: 8081
 spring:
   application:
-    name: hmdp
+    name: zhixing-tianxia
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/hema_dp?useSSL=false&serverTimezone=UTC
@@ -37,7 +37,7 @@ spring:
 
 
 mybatis-plus:
-  type-aliases-package: com.hmdp.entity # 别名扫描包
+  type-aliases-package: com.zhixing.entity # 别名扫描包
   global-config:
     db-config:
       logic-delete-field: isDeleted  # 全局逻辑删除的实体字段名
@@ -45,4 +45,4 @@ mybatis-plus:
       logic-not-delete-value: 0      # 逻辑未删除值（正常）
 logging:
   level:
-    com.hmdp: debug
+    com.zhixing: debug

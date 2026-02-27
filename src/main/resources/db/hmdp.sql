@@ -176,11 +176,13 @@ DROP TABLE IF EXISTS `tb_sign`;
 CREATE TABLE `tb_sign`  (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` bigint(20) UNSIGNED NOT NULL COMMENT '用户id',
+  `attraction_id` bigint(20) UNSIGNED NOT NULL COMMENT '景点id',
   `year` year NOT NULL COMMENT '签到的年',
   `month` tinyint(2) NOT NULL COMMENT '签到的月',
   `date` date NOT NULL COMMENT '签到的日期',
   `is_backup` tinyint(1) UNSIGNED NULL DEFAULT NULL COMMENT '是否补签',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `uniq_user_attraction_date` (`user_id`, `attraction_id`, `date`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
