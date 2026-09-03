@@ -18,6 +18,11 @@ public class RedisConstants {
     public static final String SECKILL_USER_KEY = "seckill:user:";
     public static final String SECKILL_ORDER_QUEUE = "seckill.order.queue";
     public static final String BLOG_LIKED_KEY = "TravelNote:liked:";
+
+    public static final String CACHE_TRAVELNOTE_KEY = "cache:TravelNote:";
+    public static final String CACHE_TRAVELNOTE_HOT_KEY = "cache:TravelNote:hot:";
+    public static final Long CACHE_TRAVELNOTE_TTL = 30L;
+
     public static final String USER_SIGN_KEY = "sign:";
 }
 

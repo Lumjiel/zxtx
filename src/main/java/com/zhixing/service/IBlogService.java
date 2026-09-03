@@ -29,6 +29,22 @@ public interface IBlogService extends IService<TravelNote> {
     Result queryBlogLikes(Long id);
 
     /**
+     * 攻略详情：三态缓存（真实数据 / 空值防穿透 / 未命中回源）+ 随机 TTL 防雪崩
+     *
+     * @param id 攻略 id
+     * @return 攻略详情（含作者昵称/头像、当前用户是否已点赞）
+     */
+    Result queryBlogDetail(Long id);
+
+    /**
+     * 热门攻略分页（按点赞数排序），分页结果缓存
+     *
+     * @param current 页码
+     * @return 热门攻略列表
+     */
+    Result queryHotBlog(int current);
+
+    /**
      * 逻辑删除攻略
      *
      * @param blogId 攻略 id

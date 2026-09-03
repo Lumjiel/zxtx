@@ -8,6 +8,7 @@ import com.zhixing.dto.Result;
 import com.zhixing.entity.Attraction;
 import com.zhixing.mapper.ShopMapper;
 import com.zhixing.service.IShopService;
+import com.zhixing.utils.CacheTtlJitter;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +80,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Attraction> impleme
 
             // 4. 数据库中存在：写回缓存（TTL 随机抖动，防止大量 key 同时过期引发缓存雪崩）
             stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(attraction),
-                    randomTtl(CACHE_SHOP_TTL), TimeUnit.MINUTES);
+                    CacheTtlJitter.jitter(CACHE_SHOP_TTL), TimeUnit.MINUTES);
             return Result.ok(attraction);
         } finally {
             // 5. 释放锁：必须释放「锁 key」而不是缓存 key，且放在 finally 中防止死锁
@@ -107,13 +108,6 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Attraction> impleme
         }
         // 未命中
         return null;
-    }
-
-    /**
-     * 在基准值上叠加 ±10% 的随机抖动，避免同一批缓存 key 同时过期（雪崩）
-     */
-    private long randomTtl(long base) {
-        return base + (long) (Math.random() * base * 0.2) - (long) (base * 0.1);
     }
 
     /**

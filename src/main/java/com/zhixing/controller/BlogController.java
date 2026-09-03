@@ -62,27 +62,25 @@ public class BlogController {
         // 根据用户
         Page<TravelNote> page = blogService.query()
                 .eq("user_id", user.getId()).page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
-        // 获取当前页数?
+        // 获取当前页数
         List<TravelNote> records = page.getRecords();
         return Result.ok(records);
     }
 
+    /**
+     * 攻略详情（带三态缓存）
+     */
+    @GetMapping("/{id}")
+    public Result queryBlogById(@PathVariable("id") Long id) {
+        return blogService.queryBlogDetail(id);
+    }
+
+    /**
+     * 热门攻略分页（带分页缓存）
+     */
     @GetMapping("/hot")
     public Result queryHotBlog(@RequestParam(value = "current", defaultValue = "1") Integer current) {
-        // 根据用户
-        Page<TravelNote> page = blogService.query()
-                .orderByDesc("liked")
-                .page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
-        // 获取当前页数?
-        List<TravelNote> records = page.getRecords();
-        // 查询用户
-        records.forEach(TravelNote ->{
-            Long userId = TravelNote.getUserId();
-            User user = userService.getById(userId);
-            TravelNote.setName(user.getNickName());
-            TravelNote.setIcon(user.getIcon());
-        });
-        return Result.ok(records);
+        return blogService.queryHotBlog(current);
     }
 }
 
