@@ -17,10 +17,10 @@ import java.util.List;
 
 /**
  * <p>
- * 前端控制�?
+ * 鍓嶇鎺у埗鍣?
  * </p>
  *
- * @author 虎哥
+ * @author 铏庡摜
  * @since 2021-12-22
  */
 @RestController
@@ -34,18 +34,18 @@ public class BlogController {
 
     @PostMapping
     public Result saveBlog(@RequestBody TravelNote TravelNote) {
-        // 获取登录用户
+        // 鑾峰彇鐧诲綍鐢ㄦ埛
         UserDTO user = UserHolder.getUser();
         TravelNote.setUserId(user.getId());
-        // 保存探店博文
+        // 淇濆瓨鎺㈠簵鍗氭枃
         blogService.save(TravelNote);
-        // 返回id
+        // 杩斿洖id
         return Result.ok(TravelNote.getId());
     }
 
     @PutMapping("/like/{id}")
     public Result likeBlog(@PathVariable("id") Long id) {
-        // 修改点赞数量
+        // 淇敼鐐硅禐鏁伴噺
         return blogService.likeBlog(id);
     }
 
@@ -57,25 +57,25 @@ public class BlogController {
 
     @GetMapping("/of/me")
     public Result queryMyBlog(@RequestParam(value = "current", defaultValue = "1") Integer current) {
-        // 获取登录用户
+        // 鑾峰彇鐧诲綍鐢ㄦ埛
         UserDTO user = UserHolder.getUser();
-        // 根据用户查询
+        // 鏍规嵁鐢ㄦ埛鏌ヨ
         Page<TravelNote> page = blogService.query()
                 .eq("user_id", user.getId()).page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
-        // 获取当前页数�?
+        // 鑾峰彇褰撳墠椤垫暟鎹?
         List<TravelNote> records = page.getRecords();
         return Result.ok(records);
     }
 
     @GetMapping("/hot")
     public Result queryHotBlog(@RequestParam(value = "current", defaultValue = "1") Integer current) {
-        // 根据用户查询
+        // 鏍规嵁鐢ㄦ埛鏌ヨ
         Page<TravelNote> page = blogService.query()
                 .orderByDesc("liked")
                 .page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
-        // 获取当前页数�?
+        // 鑾峰彇褰撳墠椤垫暟鎹?
         List<TravelNote> records = page.getRecords();
-        // 查询用户
+        // 鏌ヨ鐢ㄦ埛
         records.forEach(TravelNote ->{
             Long userId = TravelNote.getUserId();
             User user = userService.getById(userId);

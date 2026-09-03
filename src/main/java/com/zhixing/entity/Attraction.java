@@ -1,4 +1,4 @@
-package com\.zhixing.entity;
+package com.zhixing.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

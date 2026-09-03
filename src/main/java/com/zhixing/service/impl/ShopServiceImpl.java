@@ -20,7 +20,7 @@ import static com.zhixing.utils.RedisConstants.*;
 
 /**
  * <p>
- *  服务实现�?
+ *  鏈嶅姟瀹炵幇绫?
  * </p>
  */
 @Service
@@ -29,7 +29,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Attraction> impleme
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     /**
-     * 根据id查询商铺数据
+     * 鏍规嵁id鏌ヨ鍟嗛摵鏁版嵁
      *
      * @param id
      * @return
@@ -37,84 +37,84 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Attraction> impleme
     @Override
     public Result queryById(Long id) {
         String key = CACHE_SHOP_KEY + id;
-        // 1、从Redis中查询店铺数据，并判断缓存是否命�?
+        // 1銆佷粠Redis涓煡璇㈠簵閾烘暟鎹紝骞跺垽鏂紦瀛樻槸鍚﹀懡涓?
         Result result = getShopFromCache(key);
         if (Objects.nonNull(result)) {
-            // 缓存命中，直接返�?
+            // 缂撳瓨鍛戒腑锛岀洿鎺ヨ繑鍥?
             return result;
         }
         try {
-            // 2、缓存未命中，需要重建缓存，判断能否能够获取互斥�?
+            // 2銆佺紦瀛樻湭鍛戒腑锛岄渶瑕侀噸寤虹紦瀛橈紝鍒ゆ柇鑳藉惁鑳藉鑾峰彇浜掓枼閿?
             String lockKey = LOCK_SHOP_KEY + id;
             boolean isLock = tryLock(lockKey);
             if (!isLock) {
-                // 2.1 获取锁失败，已有线程在重建缓存，则休眠重�?
+                // 2.1 鑾峰彇閿佸け璐ワ紝宸叉湁绾跨▼鍦ㄩ噸寤虹紦瀛橈紝鍒欎紤鐪犻噸璇?
                 Thread.sleep(50);
                 return queryById(id);
             }
-            // 2.2 获取锁成功，判断缓存是否重建，防止堆积的线程全部请求数据库（所以说双检是很有必要的�?
+            // 2.2 鑾峰彇閿佹垚鍔燂紝鍒ゆ柇缂撳瓨鏄惁閲嶅缓锛岄槻姝㈠爢绉殑绾跨▼鍏ㄩ儴璇锋眰鏁版嵁搴擄紙鎵�浠ヨ鍙屾鏄緢鏈夊繀瑕佺殑锛?
             result = getShopFromCache(key);
             if (Objects.nonNull(result)) {
-                // 缓存命中，直接返�?
+                // 缂撳瓨鍛戒腑锛岀洿鎺ヨ繑鍥?
                 return result;
             }
 
-            // 3、从数据库中查询店铺数据，并判断数据库是否存在店铺数�?
+            // 3銆佷粠鏁版嵁搴撲腑鏌ヨ搴楅摵鏁版嵁锛屽苟鍒ゆ柇鏁版嵁搴撴槸鍚﹀瓨鍦ㄥ簵閾烘暟鎹?
             Attraction Attraction = this.getById(id);
             if (Objects.isNull(Attraction)) {
-                // 数据库中不存在，缓存空对象（解决缓存穿透），返回失败信�?
+                // 鏁版嵁搴撲腑涓嶅瓨鍦紝缂撳瓨绌哄璞★紙瑙ｅ喅缂撳瓨绌块�忥級锛岃繑鍥炲け璐ヤ俊鎭?
                 stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.SECONDS);
-                return Result.fail("店铺不存�?);
+                return Result.fail("店铺不存在");
             }
 
-            // 4、数据库中存在，重建缓存，响应数�?
+            // 4銆佹暟鎹簱涓瓨鍦紝閲嶅缓缂撳瓨锛屽搷搴旀暟鎹?
             stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(Attraction),
                     CACHE_SHOP_TTL, TimeUnit.MINUTES);
             return Result.ok(Attraction);
         }catch (Exception e){
-            throw new RuntimeException("发生异常");
+            throw new RuntimeException("鍙戠敓寮傚父");
         } finally {
-            // 5、释放锁（释放锁一定要记得放在finally中，防止死锁�?
+            // 5銆侀噴鏀鹃攣锛堥噴鏀鹃攣涓�瀹氳璁板緱鏀惧湪finally涓紝闃叉姝婚攣锛?
             unlock(key);
         }
     }
 
     /**
-     * 从缓存中获取店铺数据
+     * 浠庣紦瀛樹腑鑾峰彇搴楅摵鏁版嵁
      * @param key
      * @return
      */
     private Result getShopFromCache(String key) {
         String shopJson = stringRedisTemplate.opsForValue().get(key);
-        // 判断缓存是否命中
+        // 鍒ゆ柇缂撳瓨鏄惁鍛戒腑
         if (StrUtil.isNotBlank(shopJson)) {
-            // 缓存数据有值，说明缓存命中了，直接返回店铺数据
+            // 缂撳瓨鏁版嵁鏈夊�硷紝璇存槑缂撳瓨鍛戒腑浜嗭紝鐩存帴杩斿洖搴楅摵鏁版嵁
             Attraction Attraction = JSONUtil.toBean(shopJson, Attraction.class);
             return Result.ok(Attraction);
         }
-        // 判断缓存中查询的数据是否是空字符�?isNotBlank�?null �?空字符串 给排除了)
+        // 鍒ゆ柇缂撳瓨涓煡璇㈢殑鏁版嵁鏄惁鏄┖瀛楃涓?isNotBlank鎶?null 鍜?绌哄瓧绗︿覆 缁欐帓闄や簡)
         if (Objects.nonNull(shopJson)) {
-            // 当前数据是空字符串，说明缓存也命中了（该数据是之前缓存的空对象），直接返回失败信�?
-            return Result.fail("店铺不存�?);
+            // 褰撳墠鏁版嵁鏄┖瀛楃涓诧紝璇存槑缂撳瓨涔熷懡涓簡锛堣鏁版嵁鏄箣鍓嶇紦瀛樼殑绌哄璞★級锛岀洿鎺ヨ繑鍥炲け璐ヤ俊鎭?
+            return Result.fail("店铺不存在");
         }
-        // 缓存未命中（缓存数据既没有值，又不是空字符串）
+        // 缂撳瓨鏈懡涓紙缂撳瓨鏁版嵁鏃㈡病鏈夊�硷紝鍙堜笉鏄┖瀛楃涓诧級
         return null;
     }
 
     /**
-     * 获取�?
+     * 鑾峰彇閿?
      *
      * @param key
      * @return
      */
     private boolean tryLock(String key) {
         Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, "1", 10, TimeUnit.SECONDS);
-        // 拆箱要判空，防止NPE
+        // 鎷嗙瑕佸垽绌猴紝闃叉NPE
         return BooleanUtil.isTrue(flag);
     }
 
     /**
-     * 释放�?
+     * 閲婃斁閿?
      *
      * @param key
      */

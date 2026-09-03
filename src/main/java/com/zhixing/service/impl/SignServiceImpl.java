@@ -39,7 +39,7 @@ public class SignServiceImpl extends ServiceImpl<SignMapper, Sign> implements IS
         }
 
         // 检查景点是否存在
-        if (!shopService.existsById(attractionId)) {
+        if (shopService.getById(attractionId) == null) {
             return Result.fail("景点不存在");
         }
 
@@ -79,7 +79,7 @@ public class SignServiceImpl extends ServiceImpl<SignMapper, Sign> implements IS
         }
 
         // 检查景点是否存在
-        if (!shopService.existsById(attractionId)) {
+        if (shopService.getById(attractionId) == null) {
             return Result.fail("景点不存在");
         }
 
@@ -110,7 +110,7 @@ public class SignServiceImpl extends ServiceImpl<SignMapper, Sign> implements IS
         }
 
         // 检查景点是否存在
-        if (!shopService.existsById(attractionId)) {
+        if (shopService.getById(attractionId) == null) {
             return Result.fail("景点不存在");
         }
 
@@ -147,7 +147,7 @@ public class SignServiceImpl extends ServiceImpl<SignMapper, Sign> implements IS
     @Override
     public Result getAttractionSignCount(Long attractionId) {
         // 检查景点是否存在
-        if (!shopService.existsById(attractionId)) {
+        if (shopService.getById(attractionId) == null) {
             return Result.fail("景点不存在");
         }
 

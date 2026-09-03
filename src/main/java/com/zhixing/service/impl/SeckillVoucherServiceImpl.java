@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- * 秒杀优惠券表，与优惠券是一对一关系 服务实现�?
+ * 绉掓潃浼樻儬鍒歌〃锛屼笌浼樻儬鍒告槸涓�瀵逛竴鍏崇郴 鏈嶅姟瀹炵幇绫?
  * </p>
  *
- * @author 虎哥
+ * @author 铏庡摜
  * @since 2022-01-04
  */
 @Service

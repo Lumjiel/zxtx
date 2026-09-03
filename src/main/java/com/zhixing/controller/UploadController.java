@@ -20,17 +20,17 @@ public class UploadController {
     @PostMapping("TravelNote")
     public Result uploadImage(@RequestParam("file") MultipartFile image) {
         try {
-            // 获取原始文件名称
+            // 鑾峰彇鍘熷鏂囦欢鍚嶇О
             String originalFilename = image.getOriginalFilename();
-            // 生成新文件名
+            // 鐢熸垚鏂版枃浠跺悕
             String fileName = createNewFileName(originalFilename);
-            // 保存文件
+            // 淇濆瓨鏂囦欢
             image.transferTo(new File(SystemConstants.IMAGE_UPLOAD_DIR, fileName));
-            // 返回结果
-            log.debug("文件上传成功，{}", fileName);
+            // 杩斿洖缁撴灉
+            log.debug("鏂囦欢涓婁紶鎴愬姛锛寋}", fileName);
             return Result.ok(fileName);
         } catch (IOException e) {
-            throw new RuntimeException("文件上传失败", e);
+            throw new RuntimeException("鏂囦欢涓婁紶澶辫触", e);
         }
     }
 
@@ -38,26 +38,26 @@ public class UploadController {
     public Result deleteBlogImg(@RequestParam("name") String filename) {
         File file = new File(SystemConstants.IMAGE_UPLOAD_DIR, filename);
         if (file.isDirectory()) {
-            return Result.fail("错误的文件名�?);
+            return Result.fail("错误的文件名");
         }
         FileUtil.del(file);
         return Result.ok();
     }
 
     private String createNewFileName(String originalFilename) {
-        // 获取后缀
+        // 鑾峰彇鍚庣紑
         String suffix = StrUtil.subAfter(originalFilename, ".", true);
-        // 生成目录
+        // 鐢熸垚鐩綍
         String name = UUID.randomUUID().toString();
         int hash = name.hashCode();
         int d1 = hash & 0xF;
         int d2 = (hash >> 4) & 0xF;
-        // 判断目录是否存在
+        // 鍒ゆ柇鐩綍鏄惁瀛樺湪
         File dir = new File(SystemConstants.IMAGE_UPLOAD_DIR, StrUtil.format("/blogs/{}/{}", d1, d2));
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        // 生成文件�?
+        // 鐢熸垚鏂囦欢鍚?
         return StrUtil.format("/blogs/{}/{}/{}.{}", d1, d2, name, suffix);
     }
 }

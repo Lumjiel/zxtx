@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务�?
+ *  鏈嶅姟绫?
  * </p>
  *
- * @author 虎哥
+ * @author 铏庡摜
  * @since 2021-12-22
  */
 public interface IBlogCommentsService extends IService<TravelNoteComments> {

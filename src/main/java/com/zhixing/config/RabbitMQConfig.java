@@ -11,6 +11,11 @@ public class RabbitMQConfig {
     public Queue blogLikedQueue() {
         return new Queue("TravelNote:liked.queue", true); // durable=true
     }
+
+    @Bean
+    public Queue seckillOrderQueue() {
+        return new Queue("seckill.order.queue", true); // durable=true，秒杀订单异步落库
+    }
 }
 
 

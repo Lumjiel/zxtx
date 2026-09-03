@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 public class LikeCleanupConsumer {
 
     @Autowired
-    private BlogServiceImpl blogService; // 假设存在操作点赞信息�?Repository
+    private BlogServiceImpl blogService; // 鍋囪瀛樺湪鎿嶄綔鐐硅禐淇℃伅鐨?Repository
 
     @RabbitListener(queues = "TravelNote:liked.queue")
     public void handleCleanupMessage(Long contentId) {
-        // 根据 contentId 执行数据库写入操作，比如记录被移除的点赞信息�?
+        // 鏍规嵁 contentId 鎵ц鏁版嵁搴撳啓鍏ユ搷浣滐紝姣斿璁板綍琚Щ闄ょ殑鐐硅禐淇℃伅绛?
         blogService.delete_Blog(contentId);
     }
 }

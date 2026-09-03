@@ -9,16 +9,16 @@ import javax.servlet.http.HttpSession;
 
 /**
  * <p>
- *  服务�?
+ *  鏈嶅姟绫?
  * </p>
  *
- * @author 虎哥
+ * @author 铏庡摜
  * @since 2021-12-22
  */
 public interface IUserService extends IService<User> {
 
     /**
-     * 发送手机验证码
+     * 鍙戦�佹墜鏈洪獙璇佺爜
      * @param phone
      * @param session
      * @return
@@ -26,7 +26,7 @@ public interface IUserService extends IService<User> {
     Result sendCode(String phone, HttpSession session);
 
     /**
-     * 登录
+     * 鐧诲綍
      * @param loginForm
      * @param session
      * @return

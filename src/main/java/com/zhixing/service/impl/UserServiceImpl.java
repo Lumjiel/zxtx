@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- * 服务实现�?
+ * 鏈嶅姟瀹炵幇绫?
  * </p>
  *
- * @author 虎哥
+ * @author 铏庡摜
  * @since 2021-12-22
  */
 @Service
@@ -42,83 +42,83 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     /**
-     * 发送手机验证码
+     * 鍙戦�佹墜鏈洪獙璇佺爜
      * @param phone
      * @param session
      * @return
      */
     @Override
     public Result sendCode(String phone, HttpSession session) {
-        //校验手机�?
+        //鏍￠獙鎵嬫満鍙?
         if(RegexUtils.isPhoneInvalid(phone)){
-            //如果不符�?返回错误信息
-            return  Result.fail("手机号格式错�?!!");
+            //濡傛灉涓嶇鍚?杩斿洖閿欒淇℃伅
+            return  Result.fail("鎵嬫満鍙锋牸寮忛敊璇?!!");
         }
-        //符合,生成验证�?
+        //绗﹀悎,鐢熸垚楠岃瘉鐮?
         String code= RandomUtil.randomNumbers(6);
-        //保存验证码到redis
+        //淇濆瓨楠岃瘉鐮佸埌redis
         stringRedisTemplate.opsForValue().set("login:code"+phone,code,2, TimeUnit.MINUTES);
-        // 发送验证码
-        log.debug("验证�?{}" ,code);
+        // 鍙戦�侀獙璇佺爜
+        log.debug("楠岃瘉鐮?{}" ,code);
 
         return Result.ok();
     }
 
     /**
-     * 登录
+     * 鐧诲綍
      * @param loginForm
      * @param session
      * @return
      */
     @Override
     public Result login(LoginFormDTO loginForm, HttpSession session) {
-        //校验手机�?
+        //鏍￠獙鎵嬫満鍙?
         String phone = loginForm.getPhone();
         if(RegexUtils.isPhoneInvalid(phone)){
-            //如果不符�?返回错误信息
-            return  Result.fail("手机号格式错�?!!");
+            //濡傛灉涓嶇鍚?杩斿洖閿欒淇℃伅
+            return  Result.fail("鎵嬫満鍙锋牸寮忛敊璇?!!");
         }
-        //校验验证�?从redis
+        //鏍￠獙楠岃瘉鐮?浠巖edis
         String code1 = stringRedisTemplate.opsForValue().get("login:code"+phone);
         String code = loginForm.getCode();
         if (code1==null||!code1.toString().equals(code)){
-            //不一�?抛出异常
-            return Result.fail("验证码错�?");
+            //涓嶄竴鑷?鎶涘嚭寮傚父
+            return Result.fail("楠岃瘉鐮侀敊璇?");
         }
-        // 一�?根据手机号查询用�?由于是mybatis plus,可以使用query()简化代�?
+        // 涓�鑷?鏍规嵁鎵嬫満鍙锋煡璇㈢敤鎴?鐢变簬鏄痬ybatis plus,鍙互浣跨敤query()绠�鍖栦唬鐮?
         User user = query().eq("phone", phone).one();
 
-        // 判断用户是否存在
+        // 鍒ゆ柇鐢ㄦ埛鏄惁瀛樺湪
         if (user == null) {
-            // 不存�?创建新用户并保存
+            // 涓嶅瓨鍦?鍒涘缓鏂扮敤鎴峰苟淇濆瓨
             user = createUserWithPhone(phone);
         }
 
-        // 保存 UserDTO �?redis
-        //随机生成token,作为登录令牌
+        // 淇濆瓨 UserDTO 鍒?redis
+        //闅忔満鐢熸垚token,浣滀负鐧诲綍浠ょ墝
         String token = UUID.randomUUID().toString(true);
 
-        // 4、保存用户信息到Redis中，便于后面逻辑的判断（比如登录判断、随时取用户信息，减少对数据库的查询�?
+        // 4銆佷繚瀛樼敤鎴蜂俊鎭埌Redis涓紝渚夸簬鍚庨潰閫昏緫鐨勫垽鏂紙姣斿鐧诲綍鍒ゆ柇銆侀殢鏃跺彇鐢ㄦ埛淇℃伅锛屽噺灏戝鏁版嵁搴撶殑鏌ヨ锛?
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
-        // 将对象中字段全部转成string类型，StringRedisTemplate只能存字符串类型的数�?
+        // 灏嗗璞′腑瀛楁鍏ㄩ儴杞垚string绫诲瀷锛孲tringRedisTemplate鍙兘瀛樺瓧绗︿覆绫诲瀷鐨勬暟鎹?
         Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
                 CopyOptions.create().setIgnoreNullValue(true).
                         setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
-        //存到redis�?
+        //瀛樺埌redis涓?
         String tokenKey= RedisConstants.LOGIN_USER_KEY + token;
         stringRedisTemplate.opsForHash().putAll(tokenKey,userMap);
-        //设置token有效�?
+        //璁剧疆token鏈夋晥鏈?
         stringRedisTemplate.expire(tokenKey,30,TimeUnit.MINUTES);
-        //返回token
+        //杩斿洖token
         return Result.ok(token);
     }
 
     private User createUserWithPhone(String phone) {
-        //创建用户
+        //鍒涘缓鐢ㄦ埛
         User user = new User();
         user.setPhone(phone);
         user.setNickName("user_"+RandomUtil.randomString(10));
-        //保存用户
+        //淇濆瓨鐢ㄦ埛
         save(user);
         return user;
     }
