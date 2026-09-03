@@ -12,6 +12,7 @@ import com.zhixing.service.ISeckillVoucherService;
 import com.zhixing.service.IVoucherOrderService;
 import com.zhixing.utils.RedisConstants;
 import com.zhixing.utils.UserHolder;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -104,12 +105,15 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Cou
         }
 
         // 3. Lua 通过：生成订单号，投递 MQ 消息，异步创建订单
+        //    CorrelationData 携带订单号，publisher-confirm 失败时能定位到具体订单
         long orderId = IdWorker.getId();
         Map<String, Object> msg = new HashMap<>(4);
         msg.put("orderId", orderId);
         msg.put("userId", userId);
         msg.put("voucherId", voucherId);
-        rabbitTemplate.convertAndSend(RedisConstants.SECKILL_ORDER_QUEUE, JSONUtil.toJsonStr(msg));
+        rabbitTemplate.convertAndSend(
+                RedisConstants.SECKILL_ORDER_QUEUE, (Object) JSONUtil.toJsonStr(msg),
+                new CorrelationData(String.valueOf(orderId)));
 
         // 4. 返回订单号
         return Result.ok(orderId);

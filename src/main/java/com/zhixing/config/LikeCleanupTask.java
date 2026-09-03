@@ -41,7 +41,7 @@ import java.util.Map;
 public class LikeCleanupTask {
 
     private static final String BLOG_LIKED_KEY_PREFIX = RedisConstants.BLOG_LIKED_KEY;
-    private static final String LIKED_QUEUE = "TravelNote:liked.queue";
+    private static final String LIKED_QUEUE = RabbitMQConfig.BLOG_LIKED_QUEUE;
     /** 单次巡检最多处理的 key 数，防止凌晨任务长时间占用连接 */
     private static final long MAX_SCAN_KEYS = 1000;
 

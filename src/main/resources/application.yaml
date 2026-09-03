@@ -29,11 +29,16 @@ spring:
     password: guest
     virtual-host: /
     connection-timeout: 60000
+    # 生产端可靠性：confirm 确认消息到达 broker，return 捕获路由失败
+    publisher-confirm-type: correlated
+    publisher-returns: true
     listener:
       simple:
         concurrency: 1
         max-concurrency: 5
         prefetch: 1
+        # 消费端手动 ack：处理成功才确认，失败 nack 进死信队列
+        acknowledge-mode: manual
 
 # AI 智能线路规划（LangChain4j 对接阿里云百炼 DashScope OpenAI 兼容接口）
 ai:
