@@ -22,9 +22,11 @@ import java.util.stream.Collectors;
 import static com.zhixing.utils.RedisConstants.BLOG_LIKED_KEY;
 
 /**
- * <p>
- *  服务实现?
- * </p>
+ * 攻略（TravelNote）服务实现
+ *
+ * <p>点赞数据模型：DB 只存计数（tb_blog.liked），Redis ZSet（TravelNote:liked:{blogId}）
+ * 存点赞明细（member=userId, score=点赞时间戳），判重和「最早点赞 top5」都走 ZSet，
+ * 避免每次点赞都查 DB。两者一致性由每天凌晨的对账任务兜底（见 LikeCleanupTask）。</p>
  *
  * @author zhixing
  * @since 2026-02-08
@@ -34,12 +36,12 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, TravelNote> impleme
 
     private final StringRedisTemplate stringRedisTemplate;
     private final IUserService userService;
-    @Autowired
-    private BlogMapper blogMapper;
+    private final BlogMapper blogMapper;
 
-    public BlogServiceImpl(StringRedisTemplate stringRedisTemplate, UserServiceImpl userService) {
+    public BlogServiceImpl(StringRedisTemplate stringRedisTemplate, IUserService userService, BlogMapper blogMapper) {
         this.stringRedisTemplate = stringRedisTemplate;
         this.userService = userService;
+        this.blogMapper = blogMapper;
     }
 
     @Override
@@ -91,12 +93,24 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, TravelNote> impleme
     }
 
     /**
-     * 删除点赞数最少的文章(逻辑删除)
-     * @param contentId
+     * 逻辑删除攻略
+     *
+     * @param blogId 攻略 id
      */
     @Override
-    public void delete_Blog(Long contentId) {
-        blogMapper.delete(contentId);
+    public void deleteBlog(Long blogId) {
+        blogMapper.delete(blogId);
+    }
+
+    /**
+     * 对账点赞数：定时任务发现 Redis 计数与 DB 不一致时异步调用，以 Redis 为准
+     *
+     * @param blogId     攻略 id
+     * @param likedCount Redis 中的实际点赞数
+     */
+    @Override
+    public void syncLikedCount(Long blogId, long likedCount) {
+        update().set("liked", (int) likedCount).eq("id", blogId).update();
     }
 
 
@@ -109,7 +123,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, TravelNote> impleme
         }
         Long userId = user.getId();
         // 2.判断当前登录用户
-        String key = "TravelNote:liked:" + TravelNote.getId();
+        String key = BLOG_LIKED_KEY + TravelNote.getId();
         Double score = stringRedisTemplate.opsForZSet().score(key, userId.toString());
         TravelNote.setIsLike(score != null);
     }

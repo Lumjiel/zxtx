@@ -3,7 +3,7 @@
 -- KEYS[2]: 已购用户 key (seckill:user:{voucherId})
 -- ARGV[1]: 用户 id
 -- 返回: 1=扣减成功, 0=库存不足, -1=重复下单
-if (redis.call('exists', KEYS[2]) == 1) then
+if (redis.call('sismember', KEYS[2], ARGV[1]) == 1) then
     return -1
 end
 local stock = tonumber(redis.call('get', KEYS[1]))

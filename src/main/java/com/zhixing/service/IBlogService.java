@@ -5,9 +5,7 @@ import com.zhixing.entity.TravelNote;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
- * <p>
- *  服务?
- * </p>
+ * 攻略（TravelNote）服务接口
  *
  * @author zhixing
  * @since 2026-02-08
@@ -15,32 +13,34 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IBlogService extends IService<TravelNote> {
 
     /**
-     * 修改点赞
-     * @param id
-     * @return
+     * 点赞 / 取消点赞
+     *
+     * @param id 攻略 id
+     * @return 操作结果
      */
     Result likeBlog(Long id);
 
     /**
-     * 获取点赞列表
-     * @param id
-     * @return
+     * 查询点赞列表（最早点赞的 top5 用户）
+     *
+     * @param id 攻略 id
+     * @return 点赞用户列表
      */
     Result queryBlogLikes(Long id);
 
     /**
-     * 删除点赞数最少的文章
-     * @param contentId
+     * 逻辑删除攻略
+     *
+     * @param blogId 攻略 id
      */
-    void delete_Blog(Long contentId);
+    void deleteBlog(Long blogId);
+
+    /**
+     * 对账点赞数：以 Redis ZSet 的成员数为准修正数据库 liked 字段。
+     * 定时任务发现缓存与 DB 计数不一致时，经 MQ 异步调用到这里。
+     *
+     * @param blogId     攻略 id
+     * @param likedCount Redis 中的实际点赞数
+     */
+    void syncLikedCount(Long blogId, long likedCount);
 }
-
-
-
-
-
-
-
-
-
-
