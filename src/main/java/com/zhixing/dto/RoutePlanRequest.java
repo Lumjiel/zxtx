@@ -29,3 +29,4 @@ public class RoutePlanRequest {
     /** 出发地，如：上海 */
     private String startLocation;
 }
+

@@ -8,16 +8,17 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- *  鏈嶅姟瀹炵幇绫?
+ *  服务实现?
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @Service
 public class BlogCommentsServiceImpl extends ServiceImpl<BlogCommentsMapper, TravelNoteComments> implements IBlogCommentsService {
 
 }
+
 
 
 

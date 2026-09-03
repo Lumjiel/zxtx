@@ -17,11 +17,11 @@ import java.util.List;
 
 /**
  * <p>
- * 鍓嶇鎺у埗鍣?
+ * 前端控制器
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @RestController
 @RequestMapping("/TravelNote")
@@ -34,18 +34,18 @@ public class BlogController {
 
     @PostMapping
     public Result saveBlog(@RequestBody TravelNote TravelNote) {
-        // 鑾峰彇鐧诲綍鐢ㄦ埛
+        // 获取登录用户
         UserDTO user = UserHolder.getUser();
         TravelNote.setUserId(user.getId());
-        // 淇濆瓨鎺㈠簵鍗氭枃
+        // 保存探店博文
         blogService.save(TravelNote);
-        // 杩斿洖id
+        // 返回id
         return Result.ok(TravelNote.getId());
     }
 
     @PutMapping("/like/{id}")
     public Result likeBlog(@PathVariable("id") Long id) {
-        // 淇敼鐐硅禐鏁伴噺
+        // 修改点赞数量
         return blogService.likeBlog(id);
     }
 
@@ -57,25 +57,25 @@ public class BlogController {
 
     @GetMapping("/of/me")
     public Result queryMyBlog(@RequestParam(value = "current", defaultValue = "1") Integer current) {
-        // 鑾峰彇鐧诲綍鐢ㄦ埛
+        // 获取登录用户
         UserDTO user = UserHolder.getUser();
-        // 鏍规嵁鐢ㄦ埛鏌ヨ
+        // 根据用户
         Page<TravelNote> page = blogService.query()
                 .eq("user_id", user.getId()).page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
-        // 鑾峰彇褰撳墠椤垫暟鎹?
+        // 获取当前页数?
         List<TravelNote> records = page.getRecords();
         return Result.ok(records);
     }
 
     @GetMapping("/hot")
     public Result queryHotBlog(@RequestParam(value = "current", defaultValue = "1") Integer current) {
-        // 鏍规嵁鐢ㄦ埛鏌ヨ
+        // 根据用户
         Page<TravelNote> page = blogService.query()
                 .orderByDesc("liked")
                 .page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
-        // 鑾峰彇褰撳墠椤垫暟鎹?
+        // 获取当前页数?
         List<TravelNote> records = page.getRecords();
-        // 鏌ヨ鐢ㄦ埛
+        // 查询用户
         records.forEach(TravelNote ->{
             Long userId = TravelNote.getUserId();
             User user = userService.getById(userId);
@@ -85,6 +85,7 @@ public class BlogController {
         return Result.ok(records);
     }
 }
+
 
 
 

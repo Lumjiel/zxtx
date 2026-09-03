@@ -8,16 +8,17 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- *  鏈嶅姟瀹炵幇绫?
+ *  服务实现?
  * </p>
  *
- * @author 铏庡摜
+ * @author zhixing
  * @since 2021-12-24
  */
 @Service
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements IUserInfoService {
 
 }
+
 
 
 

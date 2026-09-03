@@ -17,11 +17,11 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //鍒ゆ柇鏄惁鎷︽埅,(ThreadLocal涓槸鍚︽湁鐢ㄦ埛)
+        // 判断 ThreadLocal 中是否有用户
         if(UserHolder.getUser()==null){
-            //娌℃湁,闇�瑕佹嫤鎴?璁剧疆鐘舵�佺爜
+            // 没有，需要拦截并设置
             response.setStatus(401);
-            //鎷︽埅
+            //拦截
             return false;
         }
         //鏈夌敤鎴?鏀捐
@@ -29,6 +29,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     }
 
 }
+
 
 
 

@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
  * 
  * </p>
  *
- * @author 虎哥
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -43,7 +43,7 @@ public class TravelNoteComments implements Serializable {
     private Long blogId;
 
     /**
-     * 关联�?级评论id，如果是一级评论，则值为0
+     * 关联上级评论id，如果是一级评论，则值为0
      */
     private Long parentId;
 
@@ -53,17 +53,17 @@ public class TravelNoteComments implements Serializable {
     private Long answerId;
 
     /**
-     * 回复的内�?
+     * 回复的内容
      */
     private String content;
 
     /**
-     * 点赞�?
+     * 点赞数
      */
     private Integer liked;
 
     /**
-     * 状态，0：正常，1：被举报�?：禁止查�?
+     * 状态，0：正常，1：被举报；2：禁止查看
      */
     private Boolean status;
 
@@ -79,6 +79,7 @@ public class TravelNoteComments implements Serializable {
 
 
 }
+
 
 
 

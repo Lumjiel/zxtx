@@ -22,26 +22,26 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //鑾峰彇璇锋眰澶翠腑鐨則oken
+        //获取请求头中的token
         String token = request.getHeader("authorization");
         if (StrUtil.isBlank(token)) {
             return true;
         }
-        //鍩轰簬token鑾峰彇redis涓殑鐢ㄦ埛
+        // 基于 token 获取 redis 中的用户
         String key=RedisConstants.LOGIN_USER_KEY+token;
         Map<Object, Object> userMap = stringRedisTemplate.opsForHash()
                 .entries(key);
-        //鍒ゆ柇鐢ㄦ埛鏄惁瀛樺湪
+        //判断用户
         if (userMap.isEmpty()) {
             return true;
         }
-        //灏嗘煡璇㈠埌鐨凥ash鏁版嵁杞负UserDto瀵硅薄
+        //将查询到的Hash鏁版嵁杞负UserDto对象
         UserDTO userDTO = BeanUtil.fillBeanWithMap(userMap, new UserDTO(), false);
 
-        //淇濆瓨鐢ㄦ埛淇℃伅鍒癟hreadLocal
+        //保存用户信息到ThreadLocal
         UserHolder.saveUser(userDTO);
 
-        //鍒锋柊token鏈夋晥鏈?
+        //刷新token鏈夋晥鏈?
         stringRedisTemplate.expire(key,RedisConstants.LOGIN_CODE_TTL, TimeUnit.MINUTES);
 
         //鏀捐
@@ -51,10 +51,11 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        //绉婚櫎鐢ㄦ埛
+        //移除用户
         UserHolder.removeUser();
     }
 }
+
 
 
 

@@ -5,15 +5,16 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  鏈嶅姟绫?
+ *  服务?
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 public interface IShopTypeService extends IService<AttractionType> {
 
 }
+
 
 
 

@@ -15,11 +15,11 @@ import java.util.List;
 
 /**
  * <p>
- *  鏈嶅姟瀹炵幇绫?
+ *  服务实现?
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @Service
 public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Coupon> implements IVoucherService {
@@ -29,18 +29,18 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Coupon> imple
 
     @Override
     public Result queryVoucherOfShop(Long shopId) {
-        // 鏌ヨ浼樻儬鍒镐俊鎭?
+        // 查询优惠券信息
         List<Coupon> vouchers = getBaseMapper().queryVoucherOfShop(shopId);
-        // 杩斿洖缁撴灉
+        // 返回结果
         return Result.ok(vouchers);
     }
 
     @Override
     @Transactional
     public void addSeckillVoucher(Coupon Coupon) {
-        // 淇濆瓨浼樻儬鍒?
+        // 保存优惠?
         save(Coupon);
-        // 淇濆瓨绉掓潃淇℃伅
+        // 保存秒杀信息
         SeckillVoucher seckillVoucher = new SeckillVoucher();
         seckillVoucher.setVoucherId(Coupon.getId());
         seckillVoucher.setStock(Coupon.getStock());
@@ -49,6 +49,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Coupon> imple
         seckillVoucherService.save(seckillVoucher);
     }
 }
+
 
 
 

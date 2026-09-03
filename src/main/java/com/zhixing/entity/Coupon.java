@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
  * 
  * </p>
  *
- * @author 虎哥
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -39,12 +39,12 @@ public class Coupon implements Serializable {
     private Long shopId;
 
     /**
-     * 代金券标�?
+     * 代金券标题
      */
     private String title;
 
     /**
-     * 副标�?
+     * 副标题
      */
     private String subTitle;
 
@@ -64,12 +64,12 @@ public class Coupon implements Serializable {
     private Long actualValue;
 
     /**
-     * 优惠券类�?
+     * 优惠券类型
      */
     private Integer type;
 
     /**
-     * 优惠券类�?
+     * 优惠券类型
      */
     private Integer status;
     /**
@@ -103,6 +103,7 @@ public class Coupon implements Serializable {
 
 
 }
+
 
 
 

@@ -5,15 +5,16 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 绉掓潃浼樻儬鍒歌〃锛屼笌浼樻儬鍒告槸涓�瀵逛竴鍏崇郴 鏈嶅姟绫?
+ * 秒杀优惠券表，与优惠券是 服务?
  * </p>
  *
- * @author 铏庡摜
+ * @author zhixing
  * @since 2022-01-04
  */
 public interface ISeckillVoucherService extends IService<SeckillVoucher> {
 
 }
+
 
 
 

@@ -64,3 +64,4 @@ public class SeckillOrderConsumer {
         log.info("秒杀订单创建成功: orderId={}, userId={}, voucherId={}", orderId, userId, voucherId);
     }
 }
+

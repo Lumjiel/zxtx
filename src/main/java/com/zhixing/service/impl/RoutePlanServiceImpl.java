@@ -59,3 +59,4 @@ public class RoutePlanServiceImpl implements IRoutePlanService {
         return (value == null || value.trim().isEmpty()) ? defaultValue : value.trim();
     }
 }
+

@@ -8,14 +8,15 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  *  Mapper 接口
  * </p>
  *
- * @author 虎哥
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 public interface BlogMapper extends BaseMapper<TravelNote> {
 
 
     void delete(Long contentId);
 }
+
 
 
 

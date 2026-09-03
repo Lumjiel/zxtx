@@ -14,10 +14,11 @@ public class LikeCleanupConsumer {
 
     @RabbitListener(queues = "TravelNote:liked.queue")
     public void handleCleanupMessage(Long contentId) {
-        // 鏍规嵁 contentId 鎵ц鏁版嵁搴撳啓鍏ユ搷浣滐紝姣斿璁板綍琚Щ闄ょ殑鐐硅禐淇℃伅绛?
+        // 根据 contentId 鎵ц鏁版嵁搴撳啓鍏ユ搷浣滐紝姣斿璁板綍琚Щ闄ょ殑鐐硅禐淇℃伅绛?
         blogService.delete_Blog(contentId);
     }
 }
+
 
 
 

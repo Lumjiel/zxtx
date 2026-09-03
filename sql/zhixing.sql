@@ -1,15 +1,14 @@
-/*
- Navicat Premium Data Transfer
+-- ============================================================
+-- 智行天下（zxtx）数据库初始化脚本
+-- 用法: mysql -uroot -p < sql/zhixing.sql
+-- 包含: 全部业务表结构 + 演示数据 + tb_voucher_order（含一人一单唯一索引兜底）
+-- ============================================================
 
- Source Server         : local
- Source Server Type    : MySQL
- Source Server Version : 50622
- Source Host           : localhost:3306
- Source Schema         : hmdp
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
 
- Target Server Type    : MySQL
- Target Server Version : 50622
- File Encoding         : 65001
+CREATE DATABASE IF NOT EXISTS `zhixing` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `zhixing`;
 
  Date: 14/03/2022 21:38:11
 */
@@ -89,8 +88,8 @@ CREATE TABLE `tb_seckill_voucher`  (
   `voucher_id` bigint(20) UNSIGNED NOT NULL COMMENT '关联的优惠券的id',
   `stock` int(8) NOT NULL COMMENT '库存',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `begin_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '生效时间',
-  `end_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '失效时间',
+  `begin_time` timestamp NULL DEFAULT NULL COMMENT '生效时间',
+  `end_time` timestamp NULL DEFAULT NULL COMMENT '失效时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`voucher_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '秒杀优惠券表，与优惠券是一对一关系' ROW_FORMAT = Compact;
@@ -1282,5 +1281,10 @@ CREATE TABLE `tb_voucher_order`  (
 -- ----------------------------
 -- Records of tb_voucher_order
 -- ----------------------------
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- 一人一单：数据库层兜底（配合 Redis Set 判重形成双保险）
+ALTER TABLE `tb_voucher_order` ADD UNIQUE KEY `uk_user_voucher` (`user_id`, `voucher_id`);
 
 SET FOREIGN_KEY_CHECKS = 1;

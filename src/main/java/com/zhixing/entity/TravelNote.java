@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
  * 
  * </p>
  *
- * @author 虎哥
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -59,10 +59,10 @@ public class TravelNote implements Serializable {
     private Boolean isLike;
 
     /**
-     * 逻辑删除标记�?-未删除，1-已删除）
-     * 注意：这里移除了exist=false，因为这是数据库实际存在的字�?
+     * 逻辑删除标记（0-未删除，1-已删除）
+     * 注意：这里移除了exist=false，因为这是数据库实际存在的字段
      */
-    @TableLogic // MyBatis-Plus逻辑删除注解，自动处理删除查询条�?
+    @TableLogic // MyBatis-Plus逻辑删除注解，自动处理删除查询条件
     private Integer isDeleted; // 建议用Integer类型，对应数据库tinyint
 
     /**
@@ -71,12 +71,12 @@ public class TravelNote implements Serializable {
     private String title;
 
     /**
-     * 探店的照片，最�?张，多张�?,"隔开
+     * 探店的照片，最多9张，多张以','隔开
      */
     private String images;
 
     /**
-     * 探店的文字描�?
+     * 探店的文字描述
      */
     private String content;
 
@@ -100,6 +100,7 @@ public class TravelNote implements Serializable {
      */
     private LocalDateTime updateTime;
 }
+
 
 
 

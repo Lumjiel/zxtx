@@ -51,3 +51,4 @@ public interface ISignService extends IService<Sign> {
     Result getAttractionSignCount(Long attractionId);
 
 }
+

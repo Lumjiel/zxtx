@@ -10,11 +10,11 @@ import javax.annotation.Resource;
 
 /**
  * <p>
- *  鍓嶇鎺у埗鍣?
+ * 优惠券前端控制器
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @RestController
 @RequestMapping("/Coupon")
@@ -24,9 +24,9 @@ public class VoucherController {
     private IVoucherService voucherService;
 
     /**
-     * 鏂板鏅�氬埜
-     * @param Coupon 浼樻儬鍒镐俊鎭?
-     * @return 浼樻儬鍒竔d
+     * 新增普通券
+     * @param Coupon 优惠券信?
+     * @return 优惠券id
      */
     @PostMapping
     public Result addVoucher(@RequestBody Coupon Coupon) {
@@ -35,9 +35,9 @@ public class VoucherController {
     }
 
     /**
-     * 鏂板绉掓潃鍒?
-     * @param Coupon 浼樻儬鍒镐俊鎭紝鍖呭惈绉掓潃淇℃伅
-     * @return 浼樻儬鍒竔d
+     * 新增秒杀券
+     * @param Coupon 优惠券信息，包含秒杀信息
+     * @return 优惠券id
      */
     @PostMapping("seckill")
     public Result addSeckillVoucher(@RequestBody Coupon Coupon) {
@@ -46,15 +46,16 @@ public class VoucherController {
     }
 
     /**
-     * 鏌ヨ搴楅摵鐨勪紭鎯犲埜鍒楄〃
-     * @param shopId 搴楅摵id
-     * @return 浼樻儬鍒稿垪琛?
+     * 查询景点的优惠券列表
+     * @param shopId 店铺id
+     * @return 优惠券列?
      */
     @GetMapping("/list/{shopId}")
     public Result queryVoucherOfShop(@PathVariable("shopId") Long shopId) {
        return voucherService.queryVoucherOfShop(shopId);
     }
 }
+
 
 
 

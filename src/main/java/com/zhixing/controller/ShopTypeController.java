@@ -13,11 +13,11 @@ import java.util.List;
 
 /**
  * <p>
- * 鍓嶇鎺у埗鍣?
+ * 前端控制器
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @RestController
 @RequestMapping("/Attraction-type")
@@ -32,6 +32,7 @@ public class ShopTypeController {
         return Result.ok(typeList);
     }
 }
+
 
 
 

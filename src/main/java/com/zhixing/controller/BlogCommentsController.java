@@ -7,17 +7,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- *  鍓嶇鎺у埗鍣?
+ * 前端控制器
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @RestController
 @RequestMapping("/TravelNote-comments")
 public class BlogCommentsController {
 
 }
+
 
 
 

@@ -11,13 +11,14 @@ import java.util.List;
  *  Mapper 接口
  * </p>
  *
- * @author 虎哥
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 public interface VoucherMapper extends BaseMapper<Coupon> {
 
     List<Coupon> queryVoucherOfShop(@Param("shopId") Long shopId);
 }
+
 
 
 

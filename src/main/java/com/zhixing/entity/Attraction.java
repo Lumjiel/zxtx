@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
  * 
  * </p>
  *
- * @author 虎哥
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -74,7 +74,7 @@ public class Attraction implements Serializable {
     private Long avgPrice;
 
     /**
-     * 销�?
+     * 销量
      */
     private Integer sold;
 
@@ -84,12 +84,12 @@ public class Attraction implements Serializable {
     private Integer comments;
 
     /**
-     * 评分�?~5分，�?0保存，避免小�?
+     * 评分1~5分，乘10保存，避免小数
      */
     private Integer score;
 
     /**
-     * 营业时间，例�?10:00-22:00
+     * 营业时间，例如 10:00-22:00
      */
     private String openHours;
 
@@ -107,6 +107,7 @@ public class Attraction implements Serializable {
     @TableField(exist = false)
     private Double distance;
 }
+
 
 
 

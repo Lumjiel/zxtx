@@ -6,34 +6,35 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  鏈嶅姟绫?
+ *  服务?
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 public interface IBlogService extends IService<TravelNote> {
 
     /**
-     * 淇敼鐐硅禐
+     * 修改点赞
      * @param id
      * @return
      */
     Result likeBlog(Long id);
 
     /**
-     * 鑾峰彇鐐硅禐鍒楄〃
+     * 获取点赞列表
      * @param id
      * @return
      */
     Result queryBlogLikes(Long id);
 
     /**
-     * 鍒犻櫎鐐硅禐鏁版渶灏戠殑鏂囩珷
+     * 删除点赞数最少的文章
      * @param contentId
      */
     void delete_Blog(Long contentId);
 }
+
 
 
 

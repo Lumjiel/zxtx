@@ -16,3 +16,4 @@ import org.apache.ibatis.annotations.Mapper;
 public interface SignMapper extends BaseMapper<Sign> {
 
 }
+

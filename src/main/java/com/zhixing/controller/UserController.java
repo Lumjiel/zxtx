@@ -16,11 +16,11 @@ import javax.servlet.http.HttpSession;
 
 /**
  * <p>
- * 鍓嶇鎺у埗鍣?
+ * 前端控制器
  * </p>
  *
- * @author 铏庡摜
- * @since 2021-12-22
+ * @author zhixing
+ * @since 2026-02-08
  */
 @Slf4j
 @RestController
@@ -34,58 +34,59 @@ public class UserController {
     private IUserInfoService userInfoService;
 
     /**
-     * 鍙戦�佹墜鏈洪獙璇佺爜
+     * 发送手机验证码
      */
     @PostMapping("code")
     public Result sendCode(@RequestParam("phone") String phone, HttpSession session) {
-        //  鍙戦�佺煭淇￠獙璇佺爜骞朵繚瀛橀獙璇佺爜
+        //  发送短信验证码并保存验证码
         return userService.sendCode(phone,session);
     }
 
     /**
-     * 鐧诲綍鍔熻兘
-     * @param loginForm 鐧诲綍鍙傛暟锛屽寘鍚墜鏈哄彿銆侀獙璇佺爜锛涙垨鑰呮墜鏈哄彿銆佸瘑鐮?
+     * 登录功能
+     * @param loginForm 登录参数，包?
      */
     @PostMapping("/login")
     public Result login(@RequestBody LoginFormDTO loginForm, HttpSession session){
-        //  瀹炵幇鐧诲綍鍔熻兘
+        //  实现登录功能
         return userService.login(loginForm,session);
     }
 
     /**
-     * 鐧诲嚭鍔熻兘
+     * 登出功能
      * @return 鏃?
      */
     @PostMapping("/logout")
     public Result logout(){
-        // TODO 瀹炵幇鐧诲嚭鍔熻兘
+        // TODO 实现登出功能
         return Result.fail("功能未完成");
     }
 
     @GetMapping("/me")
     public Result me(){
-        // 鑾峰彇褰撳墠鐧诲綍鐨勭敤鎴峰苟杩斿洖
+        // 获取当前登录的用户并返回
         UserDTO user = UserHolder.getUser();
-        log.info("褰撳墠鐢ㄦ埛淇℃伅:{}",user);
+        log.info("当前用户信息:{}",user);
         return Result.ok(user);
     }
 
     @GetMapping("/info/{id}")
     public Result info(@PathVariable("id") Long userId){
-        // 鏌ヨ璇︽儏
+        // 查询详情
         UserInfo info = userInfoService.getById(userId);
         if (info == null) {
-            // 娌℃湁璇︽儏锛屽簲璇ユ槸绗竴娆℃煡鐪嬭鎯?
+            // 没有详情，应该是?
             return Result.ok();
         }
         info.setCreateTime(null);
         info.setUpdateTime(null);
-        // 杩斿洖
+        // 返回
         return Result.ok(info);
     }
 
 
 }
+
 
 
 
