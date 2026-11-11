@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assumptions;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -14,9 +15,11 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * 秒杀 Lua 脚本测试（依赖本地 Redis，连不上自动跳过）
@@ -41,7 +44,13 @@ class SeckillLuaScriptTest {
 
     @BeforeAll
     static void setUp() {
-        factory = new LettuceConnectionFactory("localhost", 6379);
+        // 密码从环境变量读（REDIS_PASSWORD），不写进代码；无密码的本地 Redis 也兼容
+        RedisStandaloneConfiguration conf = new RedisStandaloneConfiguration("localhost", 6379);
+        String password = System.getenv("REDIS_PASSWORD");
+        if (password != null && !password.isEmpty()) {
+            conf.setPassword(password);
+        }
+        factory = new LettuceConnectionFactory(conf);
         factory.afterPropertiesSet();
         try {
             redis = new StringRedisTemplate(factory);
@@ -91,7 +100,9 @@ class SeckillLuaScriptTest {
         AtomicInteger success = new AtomicInteger();
         CountDownLatch ready = new CountDownLatch(threads);
         CountDownLatch done = new CountDownLatch(threads);
-        ExecutorService pool = Executors.newFixedThreadPool(64);
+        // 池大小必须等于请求数：ready 闩要求所有任务都能启动并 countDown，
+        // 池小于请求数会导致闩永远凑不满、排队任务永远不执行（死锁）
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         for (int i = 0; i < threads; i++) {
             final String userId = String.valueOf(10000 + i);
@@ -109,7 +120,11 @@ class SeckillLuaScriptTest {
                 }
             });
         }
-        done.await();
+        // 加超时上限：即使下游异常也不能让测试无限挂起
+        if (!done.await(2, TimeUnit.MINUTES)) {
+            pool.shutdownNow();
+            fail("500 个请求未在 2 分钟内完成，疑似死锁或 Redis 阻塞");
+        }
         pool.shutdown();
 
         assertEquals(100, success.get(), "成功数必须恰好等于库存数");

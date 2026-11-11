@@ -5,7 +5,7 @@ import com.zhixing.dto.LoginFormDTO;
 import com.zhixing.dto.Result;
 import com.zhixing.entity.User;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * <p>

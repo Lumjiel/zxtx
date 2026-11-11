@@ -16,7 +16,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalDateTime;
 

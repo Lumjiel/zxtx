@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      # CI 环境没有 REDIS_PASSWORD / MySQL / RabbitMQ：
+      # - SeckillLuaScriptTest 连不上 Redis 会走 Assumptions 自动跳过（不误报）
+      # - 其余为纯 Mockito 单测，无外部依赖
+      - name: Run tests
+        run: mvn -B test
+
+      - name: javax 残留检查（Boot 3.x 必须 jakarta）
+        run: |
+          if grep -rl 'javax\.' src/main/java src/test/java 2>/dev/null; then
+            echo "::error::发现 javax 残留，见上方文件列表"
+            exit 1
+          fi
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/

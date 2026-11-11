@@ -9,7 +9,7 @@ import com.zhixing.service.IShopService;
 import com.zhixing.utils.SystemConstants;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * <p>

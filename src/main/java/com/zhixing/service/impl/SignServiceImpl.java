@@ -12,7 +12,7 @@ import com.zhixing.utils.UserHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.time.LocalDate;
 
 /**
@@ -155,7 +155,8 @@ public class SignServiceImpl extends ServiceImpl<SignMapper, Sign> implements IS
         LambdaQueryWrapper<Sign> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Sign::getAttractionId, attractionId);
 
-        int count = baseMapper.selectCount(queryWrapper);
+        // MP 3.5 起 selectCount 返回 Long
+        long count = baseMapper.selectCount(queryWrapper);
         return Result.ok(count);
     }
 

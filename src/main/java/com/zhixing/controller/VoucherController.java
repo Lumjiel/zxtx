@@ -6,7 +6,7 @@ import com.zhixing.entity.Coupon;
 import com.zhixing.service.IVoucherService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * <p>

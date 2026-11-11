@@ -143,4 +143,41 @@ class SeckillOrderConsumerTest {
         assertEquals(100L, captor.getValue().getVoucherId());
         verify(channel).basicAck(5L, false);
     }
+
+    /**
+     * 死信重放全流程：同一条消息三段式投递——
+     * 第 1 次：insert 阶段 DB 故障 → 回补 Redis、nack 进死信；
+     * 第 2 次（人工修复 DB 后把死信消息重投回业务队列）：正常落库、ack；
+     * 第 3 次（重放期间消息被再次重复投递）：主键幂等拦截，不再插单、不再扣库存。
+     * 核心断言：全程 insert 恰好成功 1 次、nack 恰好 1 次——重放不会造成重复订单。
+     */
+    @Test
+    void 死信重放_故障恢复后重投_最终幂等成功() throws Exception {
+        // --- 第 1 次投递：DB 故障，进死信 ---
+        when(voucherOrderMapper.selectById(1L)).thenReturn(null);
+        when(seckillVoucherMapper.update(any(), any())).thenReturn(1);
+        when(voucherOrderMapper.insert(any(CouponOrder.class)))
+                .thenThrow(new RuntimeException("db down"))
+                .thenReturn(1); // 第 2 次投递（重放）时 DB 已恢复
+
+        consumer.handleSeckillOrder(MSG, channel, 1L);
+        verify(channel).basicNack(1L, false, false);   // 进死信
+        verify(valueOps).increment(RedisConstants.SECKILL_STOCK_KEY + 100); // 故障回补
+
+        // --- 第 2 次投递：死信重放，落库成功 ---
+        consumer.handleSeckillOrder(MSG, channel, 2L);
+        verify(channel).basicAck(2L, false);
+        // 两次投递各扣一次 DB 库存、insert 调用了两次（第 1 次抛异常未生效）
+        verify(seckillVoucherMapper, times(2)).update(any(), any());
+        verify(voucherOrderMapper, times(2)).insert(any(CouponOrder.class));
+
+        // --- 第 3 次投递：重放消息又被重复投递，主键幂等拦截 ---
+        when(voucherOrderMapper.selectById(1L)).thenReturn(new CouponOrder());
+        consumer.handleSeckillOrder(MSG, channel, 3L);
+        verify(channel).basicAck(3L, false);
+        // 幂等拦截后不再有任何新动作：insert 仍是 2 次、库存扣减仍是 2 次、nack 仍是 1 次
+        verify(voucherOrderMapper, times(2)).insert(any(CouponOrder.class));
+        verify(seckillVoucherMapper, times(2)).update(any(), any());
+        verify(channel, times(1)).basicNack(anyLong(), anyBoolean(), anyBoolean());
+    }
 }

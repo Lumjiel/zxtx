@@ -4,7 +4,7 @@ import com.zhixing.dto.Result;
 import com.zhixing.service.ISignService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * <p>
