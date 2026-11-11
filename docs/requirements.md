@@ -7,7 +7,8 @@
 
 1. `mvn test` **11/11 绿**（先修 Redis NOAUTH）
 2. Boot 3.5 + Java 17 + `javax.` 清零（`grep -rl "javax\." src/` 为空）
-3. `docs/seckill-stress-report.md`：压测上海服务器 zxtx-redis，**N 并发超卖 = 0**
+3. ~~`docs/seckill-stress-report.md`：压测上海服务器 zxtx-redis，**N 并发超卖 = 0**~~
+   → **2026-11-11 决定暂不压测**；真要做需另开访谈定口径（机器/并发/时长/超卖统计）
 4. 幂等 + 死信队列故障注入测试（重复消息 / 消费失败 / 死信重放）
 5. 全链路 trace（Redis → MQ → DB）+ 一个真实 badcase 复盘
 6. AI 线路规划 mock 测试（证明逻辑正确，不花真实 key）
