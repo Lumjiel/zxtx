@@ -1,0 +1,140 @@
+[
+ {
+  "id": "F01",
+  "desc": "docs/debrand-plan.md 存在：全仓库旧痕迹清点（表名/Redis key/注释/README/SQL）+ 每项改动量 + 风险，未动任何业务代码",
+  "passes": true,
+  "evidence": "docs/debrand-plan.md:1-90（全文），未动 src/ 与 sql/（git status 可验证）"
+ },
+ {
+  "id": "F02",
+  "desc": "debrand-plan 含 11 张表的改名映射表（tb_* → 建议名），并清点每张表牵连的实体类/XML/SQL 位置数",
+  "passes": true,
+  "evidence": "docs/debrand-plan.md §1.2 表（11 张表 × @TableName/XML/README/sql 行号），§2 映射表"
+ },
+ {
+  "id": "F03",
+  "desc": "debrand-plan 含 Redis key 前缀清点（代码中所有业务 key 模式）及改名对 Lua 脚本/测试的连带影响分析",
+  "passes": true,
+  "evidence": "docs/debrand-plan.md §5「建议不改清单」含 seckill:*/login:* key 分析 + RedisConstants.java 实读；Lua 脚本 src/main/resources/lua/seckill.lua key 均为通用 seckill:*，无需改"
+ },
+ {
+  "id": "F04",
+  "desc": "debrand-plan 有明确「建议不改清单」+ 理由（哪些痕迹留着反而无害或改动风险大于收益）",
+  "passes": true,
+  "evidence": "docs/debrand-plan.md §5（7 项不改 + 理由）"
+ },
+ {
+  "id": "F05",
+  "desc": "interview/01 细化到「照着能讲」：每个数字/断言带来源（文件:行号 或 复现命令），并补 3 分钟开场讲稿",
+  "passes": true,
+  "evidence": "interview/01 重写（2026-11-12）：3分钟开场讲稿（5段带时间轴）+ 技术栈/模块表全部锚 pom.xml:8,17,72-73,92、application.yaml:34-42、BlogServiceImpl.java:139-148,190-107；锚点经 grep 实核，修正2处（LikeCleanupTask convertAndSend 实为:93-97、queryHotBlog 实为:90-107）"
+ },
+ {
+  "id": "F06",
+  "desc": "interview/02 细化：每个设计说法对应到具体代码行号，高频追问补足三层（是什么/为什么这么选/换方案会怎样）",
+  "passes": true,
+  "evidence": "docs/interview/02-seckill-design.md 重写（2026-11-12）：Q1-Q6 六个追问全部三层展开，每条说法带代码行号（seckill.lua:5-13、VoucherOrderServiceImpl.java:77-87/91-95/109-116、SeckillOrderConsumer.java:77-82、sql/zhixing.sql:1288），行号经 sed/grep 实测对得上"
+ },
+ {
+  "id": "F07",
+  "desc": "interview/03 细化：MQ 三段式每条机制对应代码行号，追问三层补足",
+  "passes": true,
+  "evidence": "interview/03 重写（2026-11-12）：三段式每条机制带行号（SeckillOrderConsumer.java:62,70-74,78-86,102-104,126-129,143；RabbitMQConfig.java:53-54,71-82；application.yaml:34-42），4 个追问三层展开（confirm不自动重发/不回补场景/唯一索引回补/死信重复扣库存）"
+ },
+ {
+  "id": "F08",
+  "desc": "interview/04 evidence-map 中每条复现命令实测有效（至少抽 4 条真跑），失效的修正",
+  "passes": true,
+  "evidence": "2026-11-12 实测：mvn test -Dtest=SeckillLuaScriptTest,SeckillOrderConsumerTest,RoutePlanServiceImplTest → Tests run 7+2+4=13 全绿 RC=0；grep -rl \"javax.\" src/ → 0 个文件。evidence-map 中 4 条复现命令有效（seckill-stress.sh 未重跑，11-11 决定暂不压测）"
+ },
+ {
+  "id": "F09",
+  "desc": "interview/05 升级笔记细化：具体坑（javax→jakarta 哪些类、配置差异、依赖版本）与解法，能照着复述升级过程",
+  "passes": true,
+  "evidence": "interview/05 增补（2026-11-12）：javax→jakarta 具体类清单（5个类，grep -rh '^import jakarta.' 实测：Resource/PostConstruct/HttpServletRequest/Response/Session）、配置差异唯一处 spring.redis→spring.data.redis（application.yaml:11-12）、SignServiceImpl.java:158 实码复核、新增30秒复述脚本"
+ },
+ {
+  "id": "F10",
+  "desc": "docs/interview/06-whiteboard-script.md：秒杀链路白板讲稿（一张图 + 每步「为什么存在」+ 边界承认）",
+  "passes": true,
+  "evidence": "docs/interview/06-whiteboard-script.md：开场30秒 + ASCII 链路图（6 步+死信）+ 每步「为什么存在/去掉行不行」+ 边界承认 5 条"
+ },
+ {
+  "id": "F11",
+  "desc": "白板讲稿每个环节带 ≥3 层追问应答（追问三层还站得住）",
+  "passes": true,
+  "evidence": "docs/interview/06-whiteboard-script.md §2（每步三层）+ §5 三层追问速查表（5 行 × 是什么/为什么/换方案）"
+ },
+ {
+  "id": "F12",
+  "desc": "瓶颈分析写清：基于压测报告与代码指出当前真瓶颈（不编数字，标明哪些是推断）",
+  "passes": true,
+  "evidence": "docs/interview/06-whiteboard-script.md §3 瓶颈表：Redis 层实测数字（引压测报告）、Lettuce 单连接/消费者单线程落库/时间窗 DB 读均标【推断】并给代码行号"
+ },
+ {
+  "id": "F13",
+  "desc": "一致性核查：interview 文档中每个「代码里真有」的机制都在 src/ 找到对应实现，找不到的改文档如实标注",
+  "passes": true,
+  "evidence": "2026-11-12 核查：01/02/03/06 所有『代码里真有』机制均在 src/ 锚到实现并实核行号；唯一发现的不一致是 01 原文把点赞写路径误说成走 MQ（实为对账走MQ），已改；03 持久化默认值联网查证（rabbitmq.com/tutorials/tutorial-two-spring-amqp，2026-11-12）"
+ },
+ {
+  "id": "F14",
+  "desc": "README 叙事核查：无黑马/教程改造痕迹，与代码功能一致",
+  "passes": true,
+  "evidence": "README 核查（2026-11-12）：无黑马/教程痕迹；发现并修复技术栈过时（Boot 2.7.17→3.5.6、MP 3.4.3→3.5.12、JDK 8+→17，与 pom.xml:8,17,73 一致）；功能描述与代码一致（Lua测试自动跳过说法经 SeckillLuaScriptTest.java:60-61 verify）"
+ },
+ {
+  "id": "F15",
+  "desc": "已知缺陷如实成文：死信重放库存窗口等在面试文档中有明确「不会什么/怎么补」",
+  "passes": true,
+  "evidence": "docs/interview/02 Q5（死信重放库存窗口：不会重复建单、会二次扣库存、修复方向）+ 06 §2 死信段 + §4 主动承认 5 条边界"
+ },
+ {
+  "id": "F16",
+  "desc": "基线不回退：mvn test 全绿（Tests run 无 Failure/Error）",
+  "passes": true,
+  "evidence": "2026-11-12 mvn -B test：surefire 汇总 Tests run=17，Failures=0，Errors=0，RC=0"
+ },
+ {
+  "id": "F17",
+  "desc": "验收命令 check_regress.py rc=0",
+  "passes": true,
+  "evidence": "2026-11-12 python3 /root/night/tools/check_regress.py → RC=0，完成度 21/23（翻F17/F18后复跑见PROGRESS）"
+ },
+ {
+  "id": "F18",
+  "desc": "PROGRESS.md 交接完整：本轮产出、证据、下一步可被下一轮直接接手",
+  "passes": true,
+  "evidence": "PROGRESS.md 重写（2026-11-12 轮2/3）：本轮产出+证据+审查结论+下一步（debrand 拍板后开新 GOAL），末行 STATUS: done"
+ },
+ {
+  "id": "F19",
+  "desc": "一致性核查：interview/01 声称的「点赞计数走 MQ 异步对账」在 src/ 找到真实实现（或改文档如实降级说法）",
+  "passes": true,
+  "evidence": "实现找到：LikeCleanupTask.java:57（凌晨2点巡检）+:93-97（计数不一致→convertAndSend）→ LikeCleanupConsumer.java:37-57（消费+syncLikedCount落库）；01 文档已按真实语义校准（写路径同步DB，对账走MQ异步）并锚行号"
+ },
+ {
+  "id": "F20",
+  "desc": "一致性核查：详情三态缓存说法与 ShopCacheService 实现一致（三态分别指什么、代码在哪）",
+  "passes": true,
+  "evidence": "三态=真实数据/空值标记/未命中：ShopServiceImpl.java:47 注释与 :76-83（空值标记短TTL）、:97-110（getShopFromCache isNotBlank 判空）、:119（setIfAbsent 互斥锁）实现一致；ShopCacheServiceTest 4 用例覆盖"
+ },
+ {
+  "id": "F21",
+  "desc": "debrand-plan 附「待拍板问题」清单：执行顺序、预估耗时、回滚方式，明确等人决定后才动手",
+  "passes": true,
+  "evidence": "docs/debrand-plan.md §6（4 个待拍板问题）+ §7（回滚方式）"
+ },
+ {
+  "id": "F22",
+  "desc": "去痕迹终查：grep 全仓库（src/docs/README/sql）无「黑马」「hmdp」等教程来源字样残留（文件名/类名等不可改的除外，需列明）",
+  "passes": true,
+  "evidence": "grep -rn '黑马|hmdp|heima|慕课|教程' src/ docs/ README.md sql/：仅 docs/debrand-plan.md（计划文档自身，属正常）与 sql/zhixing.sql:568 'vhr'（种子数据随机用户名 user_whbqd8vhr2 片段，误报非痕迹）；src/ 零残留"
+ },
+ {
+  "id": "F23",
+  "desc": "docs/env.md 依赖记账存在且与实际一致（本轮装了什么必须记）",
+  "passes": true,
+  "evidence": "docs/env.md 新建（2026-11-12）：基线依赖/Redis隧道/测试依赖说明 + 本轮未装新依赖声明，与实际一致"
+ }
+]

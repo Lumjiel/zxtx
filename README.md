@@ -6,9 +6,9 @@
 
 ## 技术栈
 
-- **后端框架**：Spring Boot 2.7.17
+- **后端框架**：Spring Boot 3.5.6（Java 17，2026-11 从 2.7.17/Java 8 升级，见 docs/interview/05-boot3-upgrade-notes.md）
 - **AI框架**：LangChain4j 0.36.2（对接阿里云百炼 DashScope OpenAI 兼容模式，qwen-plus）
-- **持久层**：MyBatis-Plus 3.4.3
+- **持久层**：MyBatis-Plus 3.5.12（mybatis-plus-spring-boot3-starter）
 - **数据库**：MySQL 8.0
 - **缓存**：Redis（StringRedisTemplate + Lua 脚本）
 - **消息队列**：RabbitMQ（Spring AMQP，publisher-confirm / 手动 ack / 死信队列）
@@ -97,7 +97,7 @@
 
 ### 环境要求
 
-- JDK 8+（用 JDK 21 编译也已验证通过）
+- JDK 17+
 - MySQL 8.0+
 - Redis 6.0+
 - RabbitMQ 3.8+

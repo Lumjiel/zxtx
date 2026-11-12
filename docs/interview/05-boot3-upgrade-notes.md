@@ -9,11 +9,24 @@
 | 1 | parent 2.7.17 → 3.5.6，`java.version` 1.8 → 17 | Boot 3 起 Spring Framework 6 / Jakarta EE 9+，包名全面改名 |
 | 2 | `javax.annotation.Resource/PostConstruct` → `jakarta.*`（11 文件） | 注解 API 随 Jakarta 迁移；Boot 3 starter 自带 jakarta.annotation-api 2.x，无需额外依赖 |
 | 3 | `javax.servlet.http.*` → `jakarta.servlet.http.*`（4 文件：拦截器、Session） | Servlet API 同步迁移 |
+
+**javax→jakarta 到底迁了哪 5 个类**（`grep -rh "^import jakarta\." src/` 实测，2026-11-12）：
+
+- `jakarta.annotation.Resource` / `jakarta.annotation.PostConstruct`（注入与生命周期注解，散布全部 service/config）
+- `jakarta.servlet.http.HttpServletRequest` / `HttpServletResponse` / `HttpSession`
+  （登录拦截器与 Session 上下文，共 4 个文件）
+
+面试复述口径：「项目里 javax 的使用面很窄——只有 annotation 和 servlet 两族共 5 个类，
+所以迁移是机械替换 + 全量 grep 验证，没有业务逻辑改动」。
+
+**配置差异只有一处命名空间**：`spring.redis.*` → `spring.data.redis.*`
+（application.yaml:11-12 现在是 `spring.data.redis`），其余 yaml 项（MQ confirm、MP 配置）不变——
+这是面试时最容易被追问「配置层到底改了什么」的标准答案。
 | 4 | `spring.redis.*` → `spring.data.redis.*`（application.yaml） | Boot 3 属性命名空间合并进 spring.data |
 | 5 | `mybatis-plus-boot-starter` 3.4.3 → `mybatis-plus-spring-boot3-starter` 3.5.12 | MP 的 Boot 3 适配是独立 starter，直接换坐标 |
 | 6 | 追加 `mybatis-plus-jsqlparser` 3.5.12 | MP 3.5.9+ 把 PaginationInnerInterceptor 拆到独立构件，编译期才暴露 |
 | 7 | `mysql-connector-java` → `com.mysql:mysql-connector-j` | 驱动坐标迁移 |
-| 8 | `selectCount` 返回值 Integer → Long（SignServiceImpl.java:158） | MP 3.5 API 变更，编译期暴露 |
+| 8 | `selectCount` 返回值 Integer → Long（SignServiceImpl.java:158） | MP 3.5 API 变更，编译期暴露（实测现码 :158 `long count = baseMapper.selectCount(...)`） |
 | 9 | 测试：Lettuce 连接改用 `RedisStandaloneConfiguration` + 环境变量密码 | 原 NOAUTH 根因：硬编码 localhost 无密码，连隧道后的带密码 Redis 必然失败 |
 
 ## 排序上的关键决定：先修 NOAUTH 再升级
@@ -21,6 +34,14 @@
 先在 Boot 2.7 基线上把测试修到真跑（而不是 skip），再动 pom——
 结果第一步就暴露了并发测试死锁（64 线程池装不下 500 个闩任务，见 docs/seckill-trace.md badcase 1）。
 若先升级再修测试，两个问题会搅在一起，无法归因。
+
+## 30 秒复述脚本（面试用）
+
+「我先在旧基线上把测试修到真跑，再动 pom。升级动作五步：parent 换 3.5.6、javax 换 jakarta
+（5 个类、15 个文件）、`spring.redis` 改 `spring.data.redis`、MyBatis-Plus 换 Boot3 专用 starter
+并补 jsqlparser 构件、MySQL 驱动换 `com.mysql:mysql-connector-j`。API 变更编译期暴露
+（selectCount Long），配置变更运行期暴露——两层都验过，最后全量 mvn test 17 个用例全绿，
+并给 CI 加了 `grep javax` 门禁防回退。」
 
 ## 迁移期检查清单（可复用）
 

@@ -1,14 +1,14 @@
 # 智行天下 — Agent Guidelines
 
 > 给编码 agent 的最小上下文。数字（类数、测试数）以命令实际输出为准。
-> 最后核对：2026-11-10
+> 最后核对：2026-11-12
 
 ## 1. 是什么
 
 智能旅游服务平台：AI 线路规划 + 社交组队 + 攻略整合 + 门票秒杀。
 
-- Spring Boot 2.7.17 / **Java 1.8** / Maven
-- MyBatis-Plus 3.4.3 + MySQL 8.0 + Redis（Lua 脚本）+ RabbitMQ + Spring Task
+- Spring Boot 3.5.6 / **Java 17** / Maven（2026-11 从 2.7.17/Java 8 升级，坑见 docs/interview/05）
+- MyBatis-Plus 3.5.12（Boot3 starter）+ MySQL 8.0 + Redis（Lua 脚本）+ RabbitMQ + Spring Task
 - LangChain4j 0.36.2 → 阿里云百炼（DashScope OpenAI 兼容模式，qwen-plus）
 - Hutool / Lombok
 
