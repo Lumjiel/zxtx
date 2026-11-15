@@ -88,6 +88,11 @@
         <!-- LangChain4j：AI 智能线路规划（对接阿里云百炼 DashScope OpenAI 兼容接口） -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>0.36.2</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
             <version>0.36.2</version>
         </dependency>
