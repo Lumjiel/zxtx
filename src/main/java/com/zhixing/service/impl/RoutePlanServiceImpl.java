@@ -93,7 +93,11 @@ public class RoutePlanServiceImpl implements IRoutePlanService {
         out.putNull("degradeReason");
         out.put("city", city);
         out.put("days", days);
-        return objectMapper.writeValueAsString(out);
+        try {
+            return objectMapper.writeValueAsString(out);
+        } catch (Exception e) {
+            throw new IllegalStateException("结果序列化失败", e);
+        }
     }
 
     private String buildPrompt(RoutePlanRequest request, String city, int days) {
