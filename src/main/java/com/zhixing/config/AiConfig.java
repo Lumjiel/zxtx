@@ -1,7 +1,10 @@
 package com.zhixing.config;
 
+import com.zhixing.ai.ItineraryAssistant;
+import com.zhixing.ai.ItineraryTools;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.service.AiServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +48,23 @@ public class AiConfig {
                 .modelName(model)
                 .temperature(temperature)
                 .timeout(Duration.ofSeconds(60))
+                .build();
+    }
+
+    /**
+     * 带工具的行程规划助手。
+     *
+     * <p>{@code AiServices} 把 {@link ItineraryTools} 的 4 个 @Tool 方法注册为模型可调用的工具，
+     * 模型自主决策调用（天气/景点/美食/预算），最终按 JSON 契约输出。
+     * 注意：即使 api-key 为空也正常装配——调用时会抛异常，由
+     * {@code RoutePlanServiceImpl} 的降级链兜底为模板行程。</p>
+     */
+    @Bean
+    public ItineraryAssistant itineraryAssistant(ChatLanguageModel chatLanguageModel,
+                                                 ItineraryTools itineraryTools) {
+        return AiServices.builder(ItineraryAssistant.class)
+                .chatLanguageModel(chatLanguageModel)
+                .tools(itineraryTools)
                 .build();
     }
 }

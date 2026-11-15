@@ -41,6 +41,8 @@ class SeckillLuaScriptTest {
     private static LettuceConnectionFactory factory;
     private static StringRedisTemplate redis;
     private static DefaultRedisScript<Long> script;
+    /** ping 通过才置 true——tearDown 只在真连上过 Redis 时才做清理 */
+    private static boolean redisAvailable;
 
     @BeforeAll
     static void setUp() {
@@ -56,6 +58,7 @@ class SeckillLuaScriptTest {
             redis = new StringRedisTemplate(factory);
             redis.afterPropertiesSet();
             redis.opsForValue().get("__ping__");
+            redisAvailable = true;
         } catch (Exception e) {
             // 本地没有 Redis：跳过全部用例而不是报错
             Assumptions.assumeTrue(false, "本地 Redis 不可用，跳过 Lua 测试: " + e.getMessage());
@@ -67,8 +70,13 @@ class SeckillLuaScriptTest {
 
     @AfterAll
     static void tearDown() {
-        if (redis != null) {
-            redis.delete(Arrays.asList(STOCK_KEY, USER_KEY));
+        // CI 无 Redis 时 @AfterAll 仍会执行：这里必须容错，否则 assumption 跳过反而报错
+        if (redisAvailable && redis != null) {
+            try {
+                redis.delete(Arrays.asList(STOCK_KEY, USER_KEY));
+            } catch (Exception ignored) {
+                // 连接已死就没什么可清理的
+            }
         }
         if (factory != null) {
             factory.destroy();
