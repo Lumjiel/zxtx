@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("tb_blog_comments")
+@TableName("tb_travel_note_comment")
 public class TravelNoteComments implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,9 +38,9 @@ public class TravelNoteComments implements Serializable {
     private Long userId;
 
     /**
-     * 探店id
+     * 游记id
      */
-    private Long blogId;
+    private Long travelNoteId;
 
     /**
      * 关联上级评论id，如果是一级评论，则值为0

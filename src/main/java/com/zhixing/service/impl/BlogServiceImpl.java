@@ -33,7 +33,7 @@ import static com.zhixing.utils.RedisConstants.CACHE_TRAVELNOTE_TTL;
 /**
  * 攻略（TravelNote）服务实现
  *
- * <p>点赞数据模型：DB 只存计数（tb_blog.liked），Redis ZSet（TravelNote:liked:{blogId}）
+ * <p>点赞数据模型：DB 只存计数（tb_travel_note.liked），Redis ZSet（TravelNote:liked:{blogId}）
  * 存点赞明细（member=userId, score=点赞时间戳），判重和「最早点赞 top5」都走 ZSet，
  * 避免每次点赞都查 DB。两者一致性由每天凌晨的对账任务兜底（见 LikeCleanupTask）。</p>
  *

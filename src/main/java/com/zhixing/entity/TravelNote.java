@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("tb_blog")
+@TableName("tb_travel_note")
 public class TravelNote implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,9 +31,9 @@ public class TravelNote implements Serializable {
     private Long id;
 
     /**
-     * 商户id
+     * 景点id
      */
-    private Long shopId;
+    private Long attractionId;
 
     /**
      * 用户id

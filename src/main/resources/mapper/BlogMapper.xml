@@ -4,7 +4,7 @@
 
 
     <update id="delete" parameterType="java.lang.Long">
-        UPDATE tb_blog
+        UPDATE tb_travel_note
         SET is_deleted = 1
         WHERE id = #{contentId}
     </update>
