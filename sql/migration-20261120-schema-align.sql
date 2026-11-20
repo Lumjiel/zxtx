@@ -28,6 +28,12 @@
 --   SELECT TABLE_NAME FROM information_schema.TABLES
 --    WHERE TABLE_SCHEMA='zhixing'
 --      AND TABLE_NAME IN ('tb_shop','tb_shop_type','tb_blog','tb_blog_comments');
+--  b) NULL 存量预检——②/②b 共 7 列置 NOT NULL，若真实库与旧 DDL 有漂移、
+--    存量行带 NULL（2026-11-20 探查只核了结构没核数据），严格模式下对应
+--    语句报错中断；任一非零先处理再迁移：
+--   SELECT SUM(shop_id IS NULL),SUM(images IS NULL),SUM(content IS NULL) FROM tb_blog;
+--   SELECT SUM(blog_id IS NULL) FROM tb_blog_comments;
+--   SELECT SUM(name IS NULL),SUM(type_id IS NULL),SUM(images IS NULL) FROM tb_shop;
 --
 -- 中断续跑：每条语句独立生效；中断后按 SHOW TABLES 现状跳过已完成步骤，
 -- 从第一条未生效的语句继续（RENAME 报 Unknown table = 该步已完成）。
@@ -87,10 +93,14 @@ ALTER TABLE `tb_travel_note`
 -- 回滚（整段反向，仅迁错时执行）：
 --   ALTER TABLE `tb_voucher_order` DROP INDEX `uk_user_voucher`;  -- 原本就在位的库不要回滚此条
 --   ALTER TABLE `tb_travel_note` DROP COLUMN `is_deleted`;
---   ALTER TABLE `tb_travel_note_comment` RENAME COLUMN `travel_note_id` TO `blog_id`;
---   ALTER TABLE `tb_travel_note` RENAME COLUMN `attraction_id` TO `shop_id`;
+--   ALTER TABLE `tb_travel_note_comment`
+--     CHANGE COLUMN `travel_note_id` `blog_id` bigint(20) UNSIGNED NOT NULL COMMENT '探店id';
+--   ALTER TABLE `tb_travel_note`
+--     CHANGE COLUMN `attraction_id` `shop_id` bigint(20) NOT NULL COMMENT '商户id';
 --   RENAME TABLE `tb_travel_note_comment` TO `tb_blog_comments`;
 --   RENAME TABLE `tb_travel_note` TO `tb_blog`;
 --   RENAME TABLE `tb_attraction_type` TO `tb_shop_type`;
 --   RENAME TABLE `tb_attraction` TO `tb_shop`;
+--   注：②b 的 5 条注释语义对齐不反向还原（回滚后这 5 列注释仍是景点/游记语义）；
+--       本回滚还原的是表/列名与改名列的旧注释（定义取自 ab440da~1 旧 DDL），结构与数据不受影响。
 -- ============================================================
